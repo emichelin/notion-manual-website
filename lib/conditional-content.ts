@@ -121,11 +121,26 @@ export function shouldShowPage(
 
   const title = getBlockTitle(block, recordMap) || ''
 
+  // Debug logging (only in browser)
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log('shouldShowPage check:', {
+      title,
+      enabledModels,
+      titleLength: title.length
+    })
+  }
+
   // Check for Hide markers first (higher priority)
   const hideMarkers = extractHideMarkers(title)
+  if (hideMarkers.length > 0 && typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log('Hide markers found:', hideMarkers)
+  }
   for (const hideMarker of hideMarkers) {
     if (matchesModels(hideMarker, enabledModels)) {
       // If hide condition matches, hide the page
+      if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+        console.log('Page hidden due to Hide marker:', hideMarker)
+      }
       return false
     }
   }
@@ -133,10 +148,16 @@ export function shouldShowPage(
   // Check for Show markers
   const showMarkers = extractShowMarkers(title)
   if (showMarkers.length > 0) {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      console.log('Show markers found:', showMarkers)
+    }
     // If there are Show markers, at least one must match
     const anyMatches = showMarkers.some((marker) =>
       matchesModels(marker, enabledModels)
     )
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      console.log('Show markers match result:', anyMatches)
+    }
     return anyMatches
   }
 

@@ -206,8 +206,16 @@ export function NotionPage({
   
   // Check if page should be shown based on enabled models
   const shouldShow = React.useMemo(() => {
+    // Debug logging
+    if (config.isDev) {
+      console.log('Conditional content check:', {
+        enabledModels,
+        hasRecordMap: !!recordMap,
+        pageId
+      })
+    }
     return shouldShowPage(recordMap, enabledModels)
-  }, [recordMap, enabledModels])
+  }, [recordMap, enabledModels, pageId])
 
   // Custom text component that processes conditional markers
   const ConditionalText = React.useMemo(() => {
@@ -366,7 +374,8 @@ export function NotionPage({
   }
 
   // Hide entire page if conditional content check fails
-  if (!shouldShow) {
+  // Only check if router is ready (URL params are available)
+  if (router.isReady && !shouldShow) {
     return <Page404 site={site} pageId={pageId} error={{
       message: 'Page not available for selected models',
       statusCode: 404
