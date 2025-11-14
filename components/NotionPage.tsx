@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/legacy/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { type PageBlock } from 'notion-types'
+import { type Block, type PageBlock } from 'notion-types'
 import { formatDate, getBlockTitle, getPageProperty } from 'notion-utils'
 import * as React from 'react'
 import { useEffect } from 'react'
@@ -248,6 +248,64 @@ export function NotionPage({
 
   const footer = React.useMemo(() => <Footer />, [])
 
+  // Create a mapImageUrl function that has access to recordMap for custom emoji
+  // Must be called before any conditional returns (React Hooks rule)
+  const mapImageUrlWithRecordMap = React.useMemo(() => {
+    return (url: string | undefined, block: Block) => {
+      if (!url) return url
+      
+      // Handle custom emoji URLs - extract emoji ID and use direct S3 URL from recordMap
+      if (url && (url.includes('custom_emoji') || url.includes('notion%3A%2F%2Fcustom_emoji') || url.includes('notion://custom_emoji'))) {
+        try {
+          // Extract emoji ID from URL
+          // Format: notion://custom_emoji/spaceId/emojiId or encoded version
+          // URL examples:
+          // - notion://custom_emoji/926c6832-c6ed-8199-a1e5-0003e280e90b/248c6832-c6ed-80bc-9249-007a87d1c24c
+          // - https://www.notion.so/image/notion%3A%2F%2Fcustom_emoji%2F926c6832-c6ed-8199-a1e5-0003e280e90b%2F248c6832-c6ed-80bc-9249-007a87d1c24c
+          let decodedUrl = url
+          try {
+            decodedUrl = decodeURIComponent(url)
+          } catch {
+            // If decode fails, try without
+            decodedUrl = url
+          }
+          
+          // Try multiple patterns to extract emoji ID
+          let emojiId: string | null = null
+          const patterns = [
+            /custom_emoji\/[^/]+\/([^/?&]+)/,  // notion://custom_emoji/spaceId/emojiId
+            /custom_emoji%2F[^%]+%2F([^%?&]+)/, // URL encoded version
+            /custom_emoji%2F[^%]+%2F([^%?&]+)/i // Case insensitive
+          ]
+          
+          for (const pattern of patterns) {
+            const match = decodedUrl.match(pattern)
+            if (match && match[1]) {
+              emojiId = match[1]
+              break
+            }
+          }
+          
+          if (emojiId && recordMap) {
+            // Look up emoji in recordMap
+            const customEmoji = (recordMap as any)?.custom_emoji?.[emojiId]
+            if (customEmoji?.value?.url) {
+              // Use direct S3 URL from recordMap instead of Notion proxy
+              return customEmoji.value.url
+            }
+          }
+        } catch (err) {
+          // Silently fail and fall through to default mapping
+          if (config.isDev) {
+            console.warn('Failed to parse custom emoji URL:', url, err)
+          }
+        }
+      }
+      
+      return mapImageUrl(url, block)
+    }
+  }, [recordMap])
+
   useEffect(() => {
     if (!config.isServer && block) {
       // add important objects to the window global for easy debugging
@@ -280,7 +338,7 @@ export function NotionPage({
     ? undefined
     : getCanonicalPageUrl(site, recordMap)(pageId)
 
-  const socialImage = mapImageUrl(
+  const socialImage = mapImageUrlWithRecordMap(
     getPageProperty<string>('Social Image', block, recordMap) ||
       (block as PageBlock).format?.page_cover ||
       config.defaultPageCover,
@@ -325,7 +383,7 @@ export function NotionPage({
         defaultPageCover={config.defaultPageCover}
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}
-        mapImageUrl={mapImageUrl}
+        mapImageUrl={mapImageUrlWithRecordMap}
         searchNotion={config.isSearchEnabled ? searchNotion : undefined}
         pageAside={pageAside}
         footer={footer}
