@@ -1,4 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from 'next'
+
 import { getSiteMap } from '@/lib/get-site-map'
 
 /**
