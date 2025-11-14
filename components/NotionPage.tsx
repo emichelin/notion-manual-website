@@ -21,8 +21,10 @@ import * as config from '@/lib/config'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
 import { searchNotion } from '@/lib/search-notion'
+import { parseEnabledModels } from '@/lib/toggle-conditions'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
+import { ConditionalToggle } from './ConditionalToggle'
 import { Footer } from './Footer'
 import { GitHubShareButton } from './GitHubShareButton'
 import { Loading } from './Loading'
@@ -193,6 +195,25 @@ export function NotionPage({
   const router = useRouter()
   const lite = useSearchParam('lite')
 
+  // Parse enabled models from URL parameter: ?models=MFT-2000,MFT-5000
+  const enabledModels = React.useMemo(() => {
+    const modelsParam = router.query.models as string | string[] | undefined
+    return parseEnabledModels(modelsParam)
+  }, [router.query.models])
+
+  // Create conditional toggle component wrapper
+  const ConditionalToggleWrapper = React.useMemo(() => {
+    return (toggleProps: any) => {
+      return (
+        <ConditionalToggle
+          {...toggleProps}
+          recordMap={recordMap}
+          enabledModels={enabledModels}
+        />
+      )
+    }
+  }, [recordMap, enabledModels])
+
   const components = React.useMemo<Partial<NotionComponents>>(
     () => ({
       nextLegacyImage: Image,
@@ -204,11 +225,12 @@ export function NotionPage({
       Modal,
       Tweet,
       Header: NotionPageHeader,
+      Toggle: ConditionalToggleWrapper,
       propertyLastEditedTimeValue,
       propertyTextValue,
       propertyDateValue
     }),
-    []
+    [ConditionalToggleWrapper]
   )
 
   // lite mode is for oembed
