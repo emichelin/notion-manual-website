@@ -36,17 +36,15 @@ export async function getStaticPaths() {
 
   const siteMap = await getSiteMap()
 
-  // Only pre-render the most important pages (root + first level)
-  // Other pages will be generated on-demand (faster builds)
-  const importantPages = Object.keys(siteMap.canonicalPageMap).slice(0, 10) // Pre-render first 10 pages
-  
+  // Pre-render ALL pages initially
+  // Modified pages will be regenerated on-demand via /api/revalidate
   const staticPaths = {
-    paths: importantPages.map((pageId) => ({
+    paths: Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
       params: {
         pageId
       }
     })),
-    fallback: 'blocking' // Generate missing pages on-demand
+    fallback: 'blocking' // Generate any missing pages on-demand
   }
 
   console.log(staticPaths.paths)

@@ -3,9 +3,9 @@
 ## Overview
 
 The site is now optimized for incremental deployments:
-- **Faster builds**: Only pre-renders important pages
-- **On-demand generation**: Other pages generated when first accessed
-- **Selective revalidation**: Update only changed pages without full rebuild
+- **All pages pre-rendered**: All pages are built initially for fast access
+- **Selective updates**: Only modified pages are rebuilt on-demand
+- **On-demand revalidation**: Update specific pages without full deployment
 
 ## How It Works
 
@@ -15,14 +15,20 @@ The site is now optimized for incremental deployments:
 - Pages are cached and served instantly
 
 ### 2. On-Demand Revalidation
-Update specific pages without full deployment:
 
+#### Update a single page:
 ```bash
-# Revalidate a single page
+# Revalidate a specific page after modifying it in Notion
 curl -X POST "https://your-site.vercel.app/api/revalidate?secret=YOUR_SECRET&path=/page-slug"
 
 # Revalidate homepage
 curl -X POST "https://your-site.vercel.app/api/revalidate?secret=YOUR_SECRET&path=/"
+```
+
+#### Update all pages (after bulk changes):
+```bash
+# Revalidate all pages at once
+curl -X POST "https://your-site.vercel.app/api/revalidate-all?secret=YOUR_SECRET"
 ```
 
 ### 3. Setup Webhook (Optional)
