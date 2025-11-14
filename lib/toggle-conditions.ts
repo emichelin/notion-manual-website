@@ -113,12 +113,9 @@ export function evaluateCondition(
     return true
   }
 
-  // Default: if no models specified, show (backward compatible)
-  // If models specified but condition doesn't match, hide
-  if (enabledModels.length === 0) {
-    return true
-  }
-
+  // If we have a model name but it's not in enabledModels, return false
+  // If no models specified in URL and toggle has a condition, hide it
+  // (conditions require explicit model matching)
   return false
 }
 
@@ -139,11 +136,13 @@ export function shouldShowToggle(
   const condition = extractCondition(toggleTitle)
   
   // If no condition, show toggle (backward compatible)
+  // Toggles without conditions always show
   if (!condition) {
     return true
   }
 
-  // Evaluate condition
+  // If toggle has a condition, evaluate it
+  // Conditions require explicit matching - if no models in URL, hide toggle
   return evaluateCondition(condition, enabledModels)
 }
 
