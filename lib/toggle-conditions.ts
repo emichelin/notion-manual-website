@@ -3,12 +3,15 @@
  * 
  * Implements Bullet.so-style conditional rendering using toggle blocks
  * 
- * Usage in Notion:
- * - Toggle heading: {% if models contains "MFT-2000" %}
- * - Toggle heading: {% if models contains "MFT-2000" or models contains "MFT-5000" %}
- * - Toggle heading: bullet:Hide (to hide the toggle entirely)
+ * Usage in Notion (toggle heading formatted as inline code):
+ * - Toggle heading (inline code): {% if mft-2000 %}
+ * - Toggle heading (inline code): {% if mft-2000 or mft-5000 %}
+ * - Toggle heading (inline code): bullet:hide (to hide the toggle entirely)
  * 
  * URL parameter: ?models=MFT-2000,MFT-5000
+ * 
+ * Note: The toggle heading text should be formatted as inline code in Notion,
+ * matching Bullet.so's structure: https://bullet.so/docs/hiding-blocks-in-bullet/
  */
 
 /**
@@ -29,29 +32,45 @@ export function parseEnabledModels(modelsParam: string | string[] | undefined): 
 
 /**
  * Check if a toggle block should be hidden
- * Returns true if toggle title is "bullet:Hide"
+ * Returns true if toggle title is "bullet:hide" (case-insensitive)
+ * Supports Bullet.so format: inline code `bullet:hide`
+ * The text may include backticks or other formatting, so we strip them
  */
 export function shouldHideToggle(toggleTitle: string): boolean {
-  return toggleTitle.trim().toLowerCase() === 'bullet:hide'
+  // Remove backticks and other formatting markers
+  // Handle both `bullet:hide` and bullet:hide formats
+  const cleaned = toggleTitle
+    .replaceAll('`', '') // Remove backticks
+    .trim()
+    .toLowerCase()
+  
+  return cleaned === 'bullet:hide'
 }
 
 /**
  * Extract condition from toggle title
- * Supports: {% if models contains "MFT-2000" %}
+ * Supports:
+ * - {% if mft-2000 %}
+ * - {% if models contains "MFT-2000" %}
+ * - {% if mft-2000 or mft-5000 %}
  * Returns the condition string or null
  */
 export function extractCondition(toggleTitle: string): string | null {
+  // Remove backticks (inline code formatting)
+  const cleaned = toggleTitle.replaceAll('`', '').trim()
+  
   // Match: {% if ... %}
-  const match = toggleTitle.match(/\{%\s*if\s+(.+?)\s*%\}/i)
+  const match = cleaned.match(/\{%\s*if\s+(.+?)\s*%\}/i)
   return match ? match[1]!.trim() : null
 }
 
 /**
  * Evaluate a condition string
  * Supports:
- * - models contains "MFT-2000"
- * - models contains "MFT-2000" or models contains "MFT-5000"
- * - models contains "MFT-2000" and models contains "MFT-5000"
+ * - mft-2000 (simple model name)
+ * - mft-2000 or mft-5000 (OR logic)
+ * - mft-2000 and mft-5000 (AND logic)
+ * - models contains "MFT-2000" (legacy format)
  */
 export function evaluateCondition(
   condition: string,
@@ -59,7 +78,7 @@ export function evaluateCondition(
 ): boolean {
   if (!condition) return true
 
-  // Normalize condition
+  // Normalize condition - remove quotes and extra spaces
   const normalized = condition.trim()
 
   // Handle OR conditions
@@ -74,18 +93,24 @@ export function evaluateCondition(
     return parts.every((part) => evaluateCondition(part.trim(), enabledModels))
   }
 
-  // Handle "models contains" condition
+  // Handle "models contains" condition (legacy format)
   const containsMatch = normalized.match(/models\s+contains\s+["']([^"']+)["']/i)
   if (containsMatch) {
     const model = containsMatch[1]!.trim().toUpperCase()
     return enabledModels.includes(model)
   }
 
-  // Handle "models" without contains (check if any model matches)
-  const directMatch = normalized.match(/models\s*==\s*["']([^"']+)["']/i)
-  if (directMatch) {
-    const model = directMatch[1]!.trim().toUpperCase()
-    return enabledModels.includes(model)
+  // Handle simple model name (e.g., "mft-2000" or "MFT-2000")
+  // This is the primary format: {% if mft-2000 %}
+  const modelName = normalized
+    .replaceAll('"', '')
+    .replaceAll("'", '') // Remove quotes if present
+    .trim()
+    .toUpperCase()
+  
+  // Check if this model name is in the enabled models list
+  if (modelName && enabledModels.includes(modelName)) {
+    return true
   }
 
   // Default: if no models specified, show (backward compatible)

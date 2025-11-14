@@ -8,31 +8,26 @@ This implementation provides Bullet.so-style conditional rendering using Notion 
 
 ### In Notion
 
-Create toggle blocks with conditions in the toggle heading:
+Create toggle blocks with conditions in the toggle heading. **Important: Format the toggle heading text as inline code** (select text and press `Cmd/Ctrl + E` or use the inline code button).
 
 1. **Show for specific models:**
-   ```
-   {% if models contains "MFT-2000" %}
-   ```
-   Content inside this toggle will only show if `MFT-2000` is in the URL.
+   - Create a toggle block
+   - Set toggle heading to: `{% if mft-2000 %}` (formatted as inline code)
+   - Content inside this toggle will only show if `MFT-2000` is in the URL
 
 2. **Show for multiple models (OR):**
-   ```
-   {% if models contains "MFT-2000" or models contains "MFT-5000" %}
-   ```
-   Content shows if **any** of the models match.
+   - Toggle heading (inline code): `{% if mft-2000 or mft-5000 %}`
+   - Content shows if **any** of the models match
 
 3. **Show for multiple models (AND):**
-   ```
-   {% if models contains "MFT-2000" and models contains "MFT-5000" %}
-   ```
-   Content shows only if **all** models match.
+   - Toggle heading (inline code): `{% if mft-2000 and mft-5000 %}`
+   - Content shows only if **all** models match
 
 4. **Hide toggle entirely:**
-   ```
-   bullet:Hide
-   ```
-   The toggle block will not be rendered at all.
+   - Toggle heading (inline code): `bullet:hide`
+   - The toggle block will not be rendered at all
+
+**Reference:** [Bullet.so - Hiding blocks in Bullet](https://bullet.so/docs/hiding-blocks-in-bullet/)
 
 ### URL Parameters
 
@@ -51,10 +46,9 @@ https://notion-manual-website.vercel.app/page?models=MFT-2000,MFT-5000
 ### Example 1: Simple Condition
 
 **In Notion:**
-```
-Toggle: {% if models contains "MFT-2000" %}
-  Content: Installation steps for MFT-2000
-```
+1. Create a toggle block
+2. Set toggle heading to: `{% if mft-2000 %}` (formatted as inline code)
+3. Add content inside the toggle
 
 **URLs:**
 - `?models=MFT-2000` → ✅ Shows toggle content
@@ -64,10 +58,8 @@ Toggle: {% if models contains "MFT-2000" %}
 ### Example 2: OR Condition
 
 **In Notion:**
-```
-Toggle: {% if models contains "MFT-2000" or models contains "MFT-5000" %}
-  Content: Installation steps for MFT-2000 or MFT-5000
-```
+- Toggle heading (inline code): `{% if mft-2000 or mft-5000 %}`
+- Content: Installation steps for MFT-2000 or MFT-5000
 
 **URLs:**
 - `?models=MFT-2000` → ✅ Shows (MFT-2000 matches)
@@ -78,10 +70,8 @@ Toggle: {% if models contains "MFT-2000" or models contains "MFT-5000" %}
 ### Example 3: AND Condition
 
 **In Notion:**
-```
-Toggle: {% if models contains "MFT-2000" and models contains "MFT-5000" %}
-  Content: Advanced setup for both models
-```
+- Toggle heading (inline code): `{% if mft-2000 and mft-5000 %}`
+- Content: Advanced setup for both models
 
 **URLs:**
 - `?models=MFT-2000,MFT-5000` → ✅ Shows (both match)
@@ -91,10 +81,9 @@ Toggle: {% if models contains "MFT-2000" and models contains "MFT-5000" %}
 ### Example 4: Hide Toggle
 
 **In Notion:**
-```
-Toggle: bullet:Hide
-  Content: Internal notes (not shown on website)
-```
+1. Create a toggle block
+2. Set toggle heading to: `bullet:hide` (formatted as inline code)
+3. Add content inside the toggle
 
 **Result:** Toggle is completely hidden on the website.
 
@@ -102,10 +91,15 @@ Toggle: bullet:Hide
 
 ### Condition Syntax
 
-- `{% if models contains "MODEL-NAME" %}` - Check if model is in URL
-- `{% if models contains "MODEL-1" or models contains "MODEL-2" %}` - OR logic
-- `{% if models contains "MODEL-1" and models contains "MODEL-2" %}` - AND logic
-- `bullet:Hide` - Hide toggle entirely
+**Important:** All toggle headings must be formatted as **inline code** in Notion.
+
+- `{% if mft-2000 %}` - Check if model is in URL (case-insensitive)
+- `{% if mft-2000 or mft-5000 %}` - OR logic
+- `{% if mft-2000 and mft-5000 %}` - AND logic
+- `bullet:hide` - Hide toggle entirely
+
+**Legacy format (still supported):**
+- `{% if models contains "MFT-2000" %}` - Legacy format, still works
 
 ### URL Parameter Format
 

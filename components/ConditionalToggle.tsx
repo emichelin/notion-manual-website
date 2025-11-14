@@ -3,10 +3,12 @@
  * 
  * Implements Bullet.so-style conditional rendering for toggle blocks
  * 
- * Usage in Notion toggle heading:
- * - {% if models contains "MFT-2000" %}
- * - {% if models contains "MFT-2000" or models contains "MFT-5000" %}
- * - bullet:Hide (to hide toggle entirely)
+ * Usage in Notion (toggle heading formatted as inline code):
+ * - Toggle heading (inline code): {% if mft-2000 %}
+ * - Toggle heading (inline code): {% if mft-2000 or mft-5000 %}
+ * - Toggle heading (inline code): bullet:hide (to hide toggle entirely)
+ * 
+ * Reference: https://bullet.so/docs/hiding-blocks-in-bullet/
  */
 
 import { type Block } from 'notion-types'
