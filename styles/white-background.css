@@ -1,5 +1,5 @@
 /**
- * Force white background and ensure icons/images are visible
+ * Force white background and ensure content is readable on white
  */
 
 /* Force white background - override any dark mode */
@@ -26,6 +26,99 @@ html {
 .dark-mode .notion-frame,
 .dark-mode .notion-page {
   background-color: #ffffff !important;
+}
+
+/* Force dark text colors for readability on white background */
+.notion-page,
+.notion-page * {
+  color: #37352f !important;
+}
+
+/* Headings should be darker */
+.notion-h,
+.notion-h1,
+.notion-h2,
+.notion-h3,
+.notion-h4,
+.notion-h5,
+.notion-h6,
+.notion-h .notion-h-title {
+  color: #191919 !important;
+}
+
+/* Text content */
+.notion-text,
+.notion-list,
+.notion-list-item,
+.notion-callout-text,
+.notion-toggle summary {
+  color: #37352f !important;
+}
+
+/* Links */
+.notion-link,
+a {
+  color: #0b70e1 !important;
+}
+
+.notion-link:hover,
+a:hover {
+  color: #0a5fc2 !important;
+}
+
+/* Breadcrumbs */
+.breadcrumb,
+.breadcrumb .title {
+  color: #787774 !important;
+}
+
+.breadcrumb:hover,
+.breadcrumb:hover .title {
+  color: #37352f !important;
+}
+
+/* Code blocks */
+.notion-code,
+.notion-inline-code {
+  background-color: #f7f6f3 !important;
+  color: #37352f !important;
+  border: 1px solid #e9e9e7 !important;
+}
+
+/* Callouts */
+.notion-callout {
+  background-color: #f7f6f3 !important;
+  border-left: 3px solid #e9e9e7 !important;
+}
+
+.notion-callout-text {
+  color: #37352f !important;
+}
+
+/* Tables */
+.notion-table,
+.notion-table th,
+.notion-table td {
+  border-color: #e9e9e7 !important;
+}
+
+.notion-table th {
+  background-color: #f7f6f3 !important;
+  color: #191919 !important;
+}
+
+.notion-table td {
+  color: #37352f !important;
+}
+
+/* Dividers */
+.notion-hr {
+  border-color: #e9e9e7 !important;
+}
+
+/* Toggles */
+.notion-toggle summary {
+  color: #37352f !important;
 }
 
 /* Ensure page icons are visible */
@@ -64,5 +157,17 @@ html {
 .notion-page-icon-image img {
   max-width: 100% !important;
   height: auto !important;
+}
+
+/* Fix gray text that might be too light */
+.notion-gray {
+  color: #787774 !important;
+}
+
+/* Ensure proper contrast for all text elements */
+.notion-property-text,
+.notion-property-title,
+.notion-collection-card-property {
+  color: #37352f !important;
 }
 
