@@ -196,10 +196,21 @@ export function NotionPage({
   const lite = useSearchParam('lite')
 
   // Parse enabled models from URL parameter: ?models=MFT-2000,MFT-5000
+  // During SSR, router.query might not be available, so we check router.isReady
   const enabledModels = React.useMemo(() => {
-    const modelsParam = router.query.models as string | string[] | undefined
-    return parseEnabledModels(modelsParam)
-  }, [router.query.models])
+    // On server-side or before router is ready, check URL directly
+    if (typeof window !== 'undefined' && router.isReady) {
+      const modelsParam = router.query.models as string | string[] | undefined
+      return parseEnabledModels(modelsParam)
+    } else if (typeof window !== 'undefined') {
+      // Client-side but router not ready yet - parse from window.location
+      const urlParams = new URLSearchParams(window.location.search)
+      const modelsParam = urlParams.get('models')
+      return parseEnabledModels(modelsParam || undefined)
+    }
+    // SSR: return empty array (will be updated on client)
+    return []
+  }, [router.query.models, router.isReady])
 
   // Create conditional toggle component wrapper
   const ConditionalToggleWrapper = React.useMemo(() => {
