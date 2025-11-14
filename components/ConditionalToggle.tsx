@@ -16,7 +16,7 @@ import { getBlockTitle } from 'notion-utils'
 import * as React from 'react'
 import { useNotionContext } from 'react-notion-x'
 
-import { shouldShowToggle } from '@/lib/toggle-conditions'
+import { extractCondition, shouldShowToggle } from '@/lib/toggle-conditions'
 
 interface ConditionalToggleProps {
   block: Block
@@ -41,15 +41,14 @@ export function ConditionalToggle(props: ConditionalToggleProps) {
   // Check if toggle should be shown
   const shouldShow = React.useMemo(() => {
     const result = shouldShowToggle(toggleTitle, enabledModels)
-    // Debug logging in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('ConditionalToggle:', {
-        toggleTitle,
-        enabledModels,
-        shouldShow: result,
-        blockId: block.id
-      })
-    }
+    // Debug logging - always log to help with testing
+    console.log('ConditionalToggle:', {
+      toggleTitle,
+      enabledModels,
+      shouldShow: result,
+      blockId: block.id,
+      hasCondition: !!extractCondition(toggleTitle)
+    })
     return result
   }, [toggleTitle, enabledModels, block.id])
 
