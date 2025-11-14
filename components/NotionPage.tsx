@@ -17,11 +17,6 @@ import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import { useSearchParam } from 'react-use'
 
 import type * as types from '@/lib/types'
-import {
-  parseEnabledModels,
-  processTextContent,
-  shouldShowPage
-} from '@/lib/conditional-content'
 import * as config from '@/lib/config'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
@@ -197,48 +192,6 @@ export function NotionPage({
 }: types.PageProps) {
   const router = useRouter()
   const lite = useSearchParam('lite')
-  
-  // Parse enabled models from URL parameter: ?models=MFT-2000,MFT-5000
-  const enabledModels = React.useMemo(() => {
-    const modelsParam = router.query.models as string | string[] | undefined
-    return parseEnabledModels(modelsParam)
-  }, [router.query.models])
-  
-  // Check if page should be shown based on enabled models
-  const shouldShow = React.useMemo(() => {
-    // Debug logging
-    if (config.isDev) {
-      console.log('Conditional content check:', {
-        enabledModels,
-        hasRecordMap: !!recordMap,
-        pageId
-      })
-    }
-    return shouldShowPage(recordMap, enabledModels)
-  }, [recordMap, enabledModels, pageId])
-
-  // Custom text component that processes conditional markers
-  const ConditionalText = React.useMemo(() => {
-    return ({ children, ...props }: any) => {
-      if (typeof children === 'string') {
-        return <span {...props}>{processTextContent(children)}</span>
-      }
-      if (Array.isArray(children)) {
-        return (
-          <span {...props}>
-            {children.map((child, i) =>
-              typeof child === 'string' ? (
-                <React.Fragment key={i}>{processTextContent(child)}</React.Fragment>
-              ) : (
-                child
-              )
-            )}
-          </span>
-        )
-      }
-      return <span {...props}>{children}</span>
-    }
-  }, [])
 
   const components = React.useMemo<Partial<NotionComponents>>(
     () => ({
@@ -253,11 +206,9 @@ export function NotionPage({
       Header: NotionPageHeader,
       propertyLastEditedTimeValue,
       propertyTextValue,
-      propertyDateValue,
-      // Process text content to remove markers
-      text: ConditionalText
+      propertyDateValue
     }),
-    [ConditionalText]
+    []
   )
 
   // lite mode is for oembed
@@ -373,18 +324,7 @@ export function NotionPage({
     return <Page404 site={site} pageId={pageId} error={error} />
   }
 
-  // Hide entire page if conditional content check fails
-  // Only check if router is ready (URL params are available)
-  if (router.isReady && !shouldShow) {
-    return <Page404 site={site} pageId={pageId} error={{
-      message: 'Page not available for selected models',
-      statusCode: 404
-    }} />
-  }
-
-  // Get title and clean up markers
-  const rawTitle = getBlockTitle(block, recordMap) || site.name
-  const title = processTextContent(rawTitle)
+  const title = getBlockTitle(block, recordMap) || site.name
 
   console.log('notion page', {
     isDev: config.isDev,
