@@ -14,7 +14,9 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
   try {
     const props = await resolveNotionPage(domain, rawPageId)
 
-    return { props, revalidate: 10 }
+    // Increase revalidate time to reduce unnecessary rebuilds
+    // Pages will be regenerated on-demand via /api/revalidate
+    return { props, revalidate: 3600 } // 1 hour
   } catch (err) {
     console.error('page error', domain, rawPageId, err)
 
@@ -34,14 +36,17 @@ export async function getStaticPaths() {
 
   const siteMap = await getSiteMap()
 
+  // Only pre-render the most important pages (root + first level)
+  // Other pages will be generated on-demand (faster builds)
+  const importantPages = Object.keys(siteMap.canonicalPageMap).slice(0, 10) // Pre-render first 10 pages
+  
   const staticPaths = {
-    paths: Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
+    paths: importantPages.map((pageId) => ({
       params: {
         pageId
       }
     })),
-    // paths: [],
-    fallback: true
+    fallback: 'blocking' // Generate missing pages on-demand
   }
 
   console.log(staticPaths.paths)
