@@ -170,6 +170,42 @@ export const posthogConfig: Partial<PostHogConfig> = {
   api_host: 'https://app.posthog.com'
 }
 
+// ----------------------------------------------------------------------------
+// Conditional Content Visibility
+// ----------------------------------------------------------------------------
+
+/**
+ * Hide headings based on environment variable
+ * Set NEXT_PUBLIC_HIDE_HEADINGS=true to hide all headings
+ * Or set NEXT_PUBLIC_HIDE_HEADING_LEVELS=1,2,3 to hide specific heading levels
+ */
+export const shouldHideHeadings: boolean =
+  process.env.NEXT_PUBLIC_HIDE_HEADINGS === 'true'
+
+/**
+ * Comma-separated list of heading levels to hide (e.g., "1,2,3")
+ * Example: NEXT_PUBLIC_HIDE_HEADING_LEVELS=1,2,3
+ */
+export const hiddenHeadingLevels: number[] = process.env
+  .NEXT_PUBLIC_HIDE_HEADING_LEVELS
+  ? process.env.NEXT_PUBLIC_HIDE_HEADING_LEVELS.split(',').map(Number).filter(Boolean)
+  : []
+
+/**
+ * Check if a specific heading level should be hidden
+ */
+export function shouldHideHeadingLevel(level: number): boolean {
+  if (shouldHideHeadings) return true
+  return hiddenHeadingLevels.includes(level)
+}
+
+/**
+ * Customer-specific configuration
+ * Set NEXT_PUBLIC_CUSTOMER_ID to identify the customer
+ */
+export const customerId: string | undefined =
+  process.env.NEXT_PUBLIC_CUSTOMER_ID
+
 function cleanPageUrlMap(
   pageUrlMap: PageUrlOverridesMap,
   {

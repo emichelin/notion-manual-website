@@ -14,6 +14,8 @@ import 'styles/notion.css'
 import 'styles/prism-theme.css'
 // force white background and fix icons/images
 import 'styles/white-background.css'
+// conditional heading visibility
+import 'styles/conditional-headings.css'
 
 import type { AppProps } from 'next/app'
 import * as Fathom from 'fathom-client'
@@ -25,9 +27,11 @@ import { bootstrap } from '@/lib/bootstrap-client'
 import {
   fathomConfig,
   fathomId,
+  hiddenHeadingLevels,
   isServer,
   posthogConfig,
-  posthogId
+  posthogId,
+  shouldHideHeadings
 } from '@/lib/config'
 
 if (!isServer) {
@@ -36,6 +40,23 @@ if (!isServer) {
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
+
+  // Apply conditional heading classes to body
+  React.useEffect(() => {
+    document.body.classList.toggle('hide-all-headings', shouldHideHeadings)
+
+    // Apply classes for specific heading levels
+    for (const level of hiddenHeadingLevels) {
+      document.body.classList.add(`hide-h${level}`)
+    }
+
+    return () => {
+      document.body.classList.remove('hide-all-headings')
+      for (const level of hiddenHeadingLevels) {
+        document.body.classList.remove(`hide-h${level}`)
+      }
+    }
+  }, [])
 
   React.useEffect(() => {
     function onRouteChangeComplete() {

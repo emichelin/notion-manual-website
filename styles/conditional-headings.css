@@ -1,0 +1,81 @@
+/**
+ * Conditional heading visibility based on environment variables
+ * 
+ * Usage:
+ * - Set NEXT_PUBLIC_HIDE_HEADINGS=true to hide all headings
+ * - Set NEXT_PUBLIC_HIDE_HEADING_LEVELS=1,2,3 to hide specific heading levels
+ * 
+ * This CSS is conditionally loaded based on config values
+ */
+
+/* Hide all headings if NEXT_PUBLIC_HIDE_HEADINGS=true */
+.hide-all-headings .notion-h,
+.hide-all-headings .notion-h1,
+.hide-all-headings .notion-h2,
+.hide-all-headings .notion-h3,
+.hide-all-headings .notion-h4,
+.hide-all-headings .notion-h5,
+.hide-all-headings .notion-h6,
+.hide-all-headings .notion-h-title {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide specific heading levels based on NEXT_PUBLIC_HIDE_HEADING_LEVELS */
+.hide-h1 .notion-h1,
+.hide-h1 .notion-h[data-heading-level="1"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hide-h2 .notion-h2,
+.hide-h2 .notion-h[data-heading-level="2"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hide-h3 .notion-h3,
+.hide-h3 .notion-h[data-heading-level="3"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hide-h4 .notion-h4,
+.hide-h4 .notion-h[data-heading-level="4"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hide-h5 .notion-h5,
+.hide-h5 .notion-h[data-heading-level="5"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hide-h6 .notion-h6,
+.hide-h6 .notion-h[data-heading-level="6"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
