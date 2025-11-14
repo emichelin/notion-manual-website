@@ -44,7 +44,8 @@ const getNavigationLinkPages = pMemoize(
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId, {
-    fetchMissingBlocks: true
+    fetchMissingBlocks: true,
+    signFileUrls: true
   })
 
   if (navigationStyle !== 'default') {
