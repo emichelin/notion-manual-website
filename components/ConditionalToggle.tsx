@@ -14,7 +14,7 @@
 import { type Block } from 'notion-types'
 import { getBlockTitle } from 'notion-utils'
 import * as React from 'react'
-import { useNotionContext } from 'react-notion-x'
+import { Block as NotionBlock, useNotionContext } from 'react-notion-x'
 
 import { shouldShowToggle } from '@/lib/toggle-conditions'
 
@@ -58,18 +58,11 @@ export function ConditionalToggle(props: ConditionalToggleProps) {
     return null
   }
   
-  // We need to render the toggle, but react-notion-x handles child rendering
-  // The issue is that when we override Toggle, we need to let NotionRenderer
-  // handle the children. However, we can't easily access the default Toggle.
-  // 
-  // Instead, we'll render a structure that matches what react-notion-x expects,
-  // and NotionRenderer will automatically render child blocks based on block.content
-  // 
-  // But actually, we're preventing NotionRenderer from rendering by overriding Toggle.
-  // We need to check if there's a way to get the default Toggle or render children.
+  // Get child block IDs
+  const childBlockIds = block.content || []
   
-  // For now, let's render a basic structure and see if NotionRenderer fills in children
-  // The children should be rendered by NotionRenderer's block rendering system
+  // Render toggle structure with child blocks
+  // We use NotionBlock to render child blocks
   return (
     <div className="notion-toggle notion-block" data-block-id={block.id}>
       <details className="notion-toggle-details" open={restProps.defaultOpen}>
@@ -77,8 +70,9 @@ export function ConditionalToggle(props: ConditionalToggleProps) {
           <span>{toggleTitle}</span>
         </summary>
         <div className="notion-toggle-content">
-          {/* NotionRenderer will render child blocks here based on block.content */}
-          {/* We can't manually render them as we don't have access to the renderer */}
+          {childBlockIds.map((childId: string) => (
+            <NotionBlock key={childId} block={finalRecordMap?.block?.[childId]?.value} />
+          ))}
         </div>
       </details>
     </div>
