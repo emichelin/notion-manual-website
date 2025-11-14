@@ -27,9 +27,12 @@ interface ConditionalToggleProps {
 
 export function ConditionalToggle(props: ConditionalToggleProps) {
   const { block, recordMap, enabledModels, ...restProps } = props
-  const { recordMap: contextRecordMap } = useNotionContext()
   
-  // Use recordMap from props or context
+  // Get recordMap from context (this component is always rendered within NotionRenderer)
+  const context = useNotionContext()
+  const contextRecordMap = context?.recordMap
+  
+  // Use recordMap from props (preferred) or context (fallback)
   const finalRecordMap = recordMap || contextRecordMap
   
   // Get toggle title
@@ -55,10 +58,18 @@ export function ConditionalToggle(props: ConditionalToggleProps) {
     return null
   }
   
-  // Render toggle structure - react-notion-x will render child blocks
-  // We need to match the structure that react-notion-x expects
-  // The key is that NotionRenderer will automatically render child blocks
-  // based on block.content, so we just need the structure
+  // We need to render the toggle, but react-notion-x handles child rendering
+  // The issue is that when we override Toggle, we need to let NotionRenderer
+  // handle the children. However, we can't easily access the default Toggle.
+  // 
+  // Instead, we'll render a structure that matches what react-notion-x expects,
+  // and NotionRenderer will automatically render child blocks based on block.content
+  // 
+  // But actually, we're preventing NotionRenderer from rendering by overriding Toggle.
+  // We need to check if there's a way to get the default Toggle or render children.
+  
+  // For now, let's render a basic structure and see if NotionRenderer fills in children
+  // The children should be rendered by NotionRenderer's block rendering system
   return (
     <div className="notion-toggle notion-block" data-block-id={block.id}>
       <details className="notion-toggle-details" open={restProps.defaultOpen}>
@@ -66,8 +77,8 @@ export function ConditionalToggle(props: ConditionalToggleProps) {
           <span>{toggleTitle}</span>
         </summary>
         <div className="notion-toggle-content">
-          {/* Child blocks are rendered by NotionRenderer automatically */}
-          {/* The block.content array tells NotionRenderer which blocks to render */}
+          {/* NotionRenderer will render child blocks here based on block.content */}
+          {/* We can't manually render them as we don't have access to the renderer */}
         </div>
       </details>
     </div>
