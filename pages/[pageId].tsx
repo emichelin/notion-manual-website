@@ -16,6 +16,7 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
 
     // Increase revalidate time to reduce unnecessary rebuilds
     // Pages will be regenerated on-demand via /api/revalidate
+    // Note: Conditional content filtering happens client-side via URL parameters
     return { props, revalidate: 3600 } // 1 hour
   } catch (err) {
     console.error('page error', domain, rawPageId, err)
