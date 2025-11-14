@@ -12,6 +12,8 @@ import 'styles/global.css'
 import 'styles/notion.css'
 // global style overrides for prism theme (optional)
 import 'styles/prism-theme.css'
+// force white background and fix icons/images
+import 'styles/white-background.css'
 
 import type { AppProps } from 'next/app'
 import * as Fathom from 'fathom-client'

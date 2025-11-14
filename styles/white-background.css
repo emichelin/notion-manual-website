@@ -1,0 +1,68 @@
+/**
+ * Force white background and ensure icons/images are visible
+ */
+
+/* Force white background - override any dark mode */
+body,
+html {
+  background-color: #ffffff !important;
+}
+
+.notion-app,
+.notion-app.light-mode {
+  background-color: #ffffff !important;
+}
+
+.notion-frame {
+  background-color: #ffffff !important;
+}
+
+.notion-page {
+  background-color: #ffffff !important;
+}
+
+/* Override dark mode if it's enabled */
+.dark-mode .notion-app,
+.dark-mode .notion-frame,
+.dark-mode .notion-page {
+  background-color: #ffffff !important;
+}
+
+/* Ensure page icons are visible */
+.notion-page-icon,
+.notion-page-icon-inline,
+.notion-page-icon-image,
+.notion-page-icon-image img,
+.notion-page-icon-span,
+.notion-page-icon-span span {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+}
+
+/* Fix breadcrumb icons */
+.breadcrumb .notion-page-icon,
+.breadcrumb .notion-page-icon-inline,
+.breadcrumb .notion-page-icon-image {
+  display: inline-flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+}
+
+/* Ensure images load properly */
+.notion-asset-wrapper img,
+.notion-image img,
+.notion-page-cover img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix any hidden elements that should be visible */
+.notion-page-icon-image img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
