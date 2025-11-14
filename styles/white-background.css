@@ -28,13 +28,31 @@ html {
   background-color: #ffffff !important;
 }
 
-/* Force dark text colors for readability on white background */
-.notion-page,
-.notion-page * {
+/* Override CSS variables for light mode colors */
+:root,
+.light-mode {
+  --fg-color: #37352f !important;
+  --fg-color-0: rgba(55, 53, 47, 0.09) !important;
+  --fg-color-1: rgba(55, 53, 47, 0.16) !important;
+  --fg-color-2: rgba(55, 53, 47, 0.4) !important;
+  --fg-color-3: rgba(55, 53, 47, 0.6) !important;
+  --fg-color-4: #37352f !important;
+  --fg-color-5: #37352f !important;
+  --fg-color-6: #37352f !important;
+  --bg-color: #ffffff !important;
+  --bg-color-0: #ffffff !important;
+  --bg-color-1: #f7f6f3 !important;
+  --bg-color-2: #f1f1ef !important;
+}
+
+/* Force dark text colors for all content */
+.notion-page-content,
+.notion-page-content-inner,
+.notion-page-content-inner * {
   color: #37352f !important;
 }
 
-/* Headings should be darker */
+/* Headings - darker for emphasis */
 .notion-h,
 .notion-h1,
 .notion-h2,
@@ -42,38 +60,48 @@ html {
 .notion-h4,
 .notion-h5,
 .notion-h6,
-.notion-h .notion-h-title {
+.notion-h .notion-h-title,
+.notion-h-title {
   color: #191919 !important;
 }
 
-/* Text content */
+/* All text elements */
 .notion-text,
 .notion-list,
 .notion-list-item,
+.notion-numbered-list,
+.notion-numbered-list-item,
+.notion-bulleted-list,
+.notion-bulleted-list-item,
 .notion-callout-text,
-.notion-toggle summary {
+.notion-toggle summary,
+.notion-quote {
   color: #37352f !important;
 }
 
 /* Links */
 .notion-link,
-a {
+.notion-page-link,
+a:not(.breadcrumb):not(.notion-search-button) {
   color: #0b70e1 !important;
 }
 
 .notion-link:hover,
-a:hover {
+.notion-page-link:hover,
+a:not(.breadcrumb):not(.notion-search-button):hover {
   color: #0a5fc2 !important;
 }
 
-/* Breadcrumbs */
+/* Breadcrumbs - lighter gray */
 .breadcrumb,
-.breadcrumb .title {
+.breadcrumb .title,
+.breadcrumb .notion-page-title-text {
   color: #787774 !important;
 }
 
 .breadcrumb:hover,
-.breadcrumb:hover .title {
+.breadcrumb:hover .title,
+.breadcrumb:hover .notion-page-title-text {
   color: #37352f !important;
 }
 
@@ -91,7 +119,8 @@ a:hover {
   border-left: 3px solid #e9e9e7 !important;
 }
 
-.notion-callout-text {
+.notion-callout-text,
+.notion-callout-text * {
   color: #37352f !important;
 }
 
@@ -119,6 +148,24 @@ a:hover {
 /* Toggles */
 .notion-toggle summary {
   color: #37352f !important;
+}
+
+.notion-toggle summary:hover {
+  color: #191919 !important;
+}
+
+/* Page title */
+.notion-title {
+  color: #191919 !important;
+}
+
+/* Page links in content */
+.notion-page-link .notion-page-title-text {
+  color: #37352f !important;
+}
+
+.notion-page-link:hover .notion-page-title-text {
+  color: #191919 !important;
 }
 
 /* Ensure page icons are visible */
@@ -160,7 +207,9 @@ a:hover {
 }
 
 /* Fix gray text that might be too light */
-.notion-gray {
+.notion-gray,
+span[style*="color"][style*="gray"],
+span[style*="color"][style*="grey"] {
   color: #787774 !important;
 }
 
@@ -168,6 +217,14 @@ a:hover {
 .notion-property-text,
 .notion-property-title,
 .notion-collection-card-property {
+  color: #37352f !important;
+}
+
+/* Override any inline styles that might set light colors */
+.notion-page-content [style*="color: rgb(255"],
+.notion-page-content [style*="color:rgba(255"],
+.notion-page-content [style*="color:#fff"],
+.notion-page-content [style*="color:#ffffff"] {
   color: #37352f !important;
 }
 
