@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { type PageBlock } from 'notion-types'
 import { formatDate, getBlockTitle, getPageProperty } from 'notion-utils'
 import * as React from 'react'
+import { useEffect } from 'react'
 import BodyClassName from 'react-body-classname'
 import {
   type NotionComponents,
@@ -247,6 +248,16 @@ export function NotionPage({
 
   const footer = React.useMemo(() => <Footer />, [])
 
+  useEffect(() => {
+    if (!config.isServer && block) {
+      // add important objects to the window global for easy debugging
+      const g = window as any
+      g.pageId = pageId
+      g.recordMap = recordMap
+      g.block = block
+    }
+  }, [pageId, recordMap, block])
+
   if (router.isFallback) {
     return <Loading />
   }
@@ -264,14 +275,6 @@ export function NotionPage({
     rootNotionPageId: site.rootNotionPageId,
     recordMap
   })
-
-  if (!config.isServer) {
-    // add important objects to the window global for easy debugging
-    const g = window as any
-    g.pageId = pageId
-    g.recordMap = recordMap
-    g.block = block
-  }
 
   const canonicalPageUrl = config.isDev
     ? undefined
